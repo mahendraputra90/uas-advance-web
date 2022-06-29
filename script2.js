@@ -257,3 +257,108 @@ function taskStufs(e) {
     }
   }
 }
+
+function deleteAll(e) {
+  e.preventDefault();
+
+  let list =
+    e.target.parentElement.parentElement.children[1].children[0].childNodes[1]
+      .children;
+
+  while (list.length != 1) {
+
+    list[list.length - 1].remove();
+  }
+  saveLS("", -1);
+  saveInnerTasks("", -1);
+}
+
+
+function loadLS() {
+  if (localStorage.getItem("allTasks") === null) {
+    localStorage.setItem("allTasks", JSON.stringify(allTasks));
+  } else {
+    allTasks = JSON.parse(localStorage.getItem("allTasks"));
+
+    allTasks.forEach(function (item) {
+      if (item != "") {
+        createNewTask(item.text, item.check);
+      }
+    });
+  }
+}
+
+
+function loadInnerTasks() {
+  if (localStorage.getItem("innerTasks") === null) {
+    localStorage.setItem("innerTasks", JSON.stringify(innerTasks));
+  } else {
+    innerTasks = JSON.parse(localStorage.getItem("innerTasks"));
+
+    innerTasks.forEach(function (item) {
+      if (item.mainText != "") {
+        addInnerTask(item.upperTaskText, item.mainText, item.check);
+      }
+    });
+  }
+}
+
+
+function saveLS(text, index) {
+
+  if (index == -1) {
+    localStorage.removeItem("allTasks");
+    allTasks.length = 0;
+    loadLS();
+  } else if (index == 0) {
+    const tmp = JSON.parse(localStorage.getItem("allTasks"));
+    let c;
+    tmp.forEach(function (item, ind) {
+      if (item.text == text) c = ind;
+    });
+    tmp.splice(c, 1);
+    localStorage.setItem("allTasks", JSON.stringify(tmp));
+
+
+    const tmp2 = JSON.parse(localStorage.getItem("innerTasks"));
+
+    for (let i = 0; i < tmp2.length; i++) {
+      if (tmp2[i].upperTaskText == text) {
+        saveInnerTasks(tmp[i], 0);
+      }
+    }
+  } else if (index == 1) {
+    const tmp = JSON.parse(localStorage.getItem("allTasks"));
+    tmp.push({ text: text, check: false });
+    localStorage.setItem("allTasks", JSON.stringify(tmp));
+  }
+}
+
+
+function saveInnerTasks(item, index, upperText = "") {
+
+  if (index == -1) {
+    localStorage.removeItem("innerTasks");
+    innerTasks.length = 0;
+    loadInnerTasks();
+  } else if (index == 0) {
+    const tmp = JSON.parse(localStorage.getItem("innerTasks"));
+
+    let cont = false;
+    let c;
+    tmp.forEach(function (e, ind) {
+      if (e.mainText == item && e.upperTaskText == upperText) {
+        c = ind;
+        cont = true;
+      }
+    });
+    if (cont) {
+      tmp.splice(c, 1);
+      localStorage.setItem("innerTasks", JSON.stringify(tmp));
+    }
+  } else if (index == 1) {
+    const tmp = JSON.parse(localStorage.getItem("innerTasks"));
+    tmp.push(item);
+    localStorage.setItem("innerTasks", JSON.stringify(tmp));
+  }
+}
