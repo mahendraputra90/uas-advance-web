@@ -113,4 +113,147 @@ function addInnerTask(upperText, mainText, check) {
   );
 }
 
+function taskStufs(e) {
+  e.preventDefault();
 
+  if (e.target.classList.contains("delete-item")) {
+
+
+    const text = e.target.parentElement.children[0].innerText;
+    saveLS(text, 0);
+
+
+    let tempInnerList = JSON.parse(localStorage.getItem("innerTasks"));
+
+    tempInnerList.forEach(function (item) {
+      if (text == item.upperTaskText) {
+        saveInnerTasks(item.mainText, 0, text);
+      }
+    });
+
+    e.target.parentElement.remove();
+
+
+  } else if (e.target.classList.contains("delete-inner-item")) {
+    const upperText =
+      e.target.parentElement.parentElement.parentElement.parentElement
+        .parentElement.children[0].innerText;
+
+    saveInnerTasks(e.target.parentElement.children[0].innerText, 0, upperText);
+
+
+    e.target.parentElement.remove();
+  } else if (e.target.classList.contains("check")) {
+    let tmpList = JSON.parse(localStorage.getItem("allTasks"));
+
+    if (
+      e.target.parentElement.children[0].classList.contains("line-throught")
+    ) {
+      for (let i = 0; i < tmpList.length; i++) {
+        if (tmpList[i].text == e.target.parentElement.children[0].innerText) {
+          tmpList[i].check = false;
+          localStorage.setItem("allTasks", JSON.stringify(tmpList));
+          break;
+        }
+      }
+
+      e.target.parentElement.children[0].classList.remove("line-throught");
+    } else {
+      for (let i = 0; i < tmpList.length; i++) {
+        if (tmpList[i].text == e.target.parentElement.children[0].innerText) {
+          tmpList[i].check = true;
+          localStorage.setItem("allTasks", JSON.stringify(tmpList));
+          break;
+        }
+      }
+
+      e.target.parentElement.children[0].classList.add("line-throught");
+    }
+
+
+  } else if (e.target.classList.contains("inner-check")) {
+    let tmp = JSON.parse(localStorage.getItem("innerTasks"));
+
+    const upperText =
+      e.target.parentElement.parentElement.parentElement.parentElement
+        .parentElement.children[0].innerText;
+
+    if (
+      e.target.parentElement.children[0].classList.contains("line-throught")
+    ) {
+      tmp.forEach(function (item) {
+        if (
+          item.mainText == e.target.parentElement.children[0].innerText &&
+          item.upperTaskText == upperText
+        ) {
+          item.check = false;
+          localStorage.setItem("innerTasks", JSON.stringify(tmp));
+        }
+      });
+      e.target.parentElement.children[0].classList.remove("line-throught");
+    } else {
+      tmp.forEach(function (item) {
+        if (
+          item.mainText == e.target.parentElement.children[0].innerText &&
+          item.upperTaskText == upperText
+        ) {
+          item.check = true;
+          localStorage.setItem("innerTasks", JSON.stringify(tmp));
+        }
+      });
+      e.target.parentElement.children[0].classList.add("line-throught");
+    }
+  } else if (e.target.classList.contains("btn-add-inner-task")) {
+
+    const text = e.target.parentElement.childNodes[1].value;
+
+    if (text != "") {
+      innerTasks = JSON.parse(localStorage.getItem("innerTasks"));
+
+
+      const upperText =
+        e.target.parentElement.parentElement.parentElement.parentElement
+          .parentElement.parentElement.children[0].innerText;
+
+      let c = true;
+      innerTasks.forEach(function (item) {
+        if (item.mainText == text && item.upperTaskText == upperText) {
+          c = false;
+          alert("Task Already Added");
+        }
+      });
+      if (c == true) {
+
+        innerTasks.push({
+          upperTaskText: upperText,
+          mainText: text,
+          check: false,
+        });
+        addInnerTask(upperText, text);
+        saveInnerTasks(innerTasks[innerTasks.length - 1], 1);
+      }
+    }
+
+    e.target.parentElement.childNodes[1].value = "";
+
+
+  } else if (e.target.classList.contains("i-add-inner-task")) {
+    let text = e.target.parentElement.parentElement.childNodes[1].value;
+
+    if (text != "") {
+
+      const upperText =
+        e.target.parentElement.parentElement.parentElement.parentElement
+          .parentElement.parentElement.parentElement.children[0].innerText;
+
+ 
+      innerTasks.push({ upperTaskText: upperText, mainText: text });
+
+      addInnerTask(upperText, text);
+      saveInnerTasks(innerTasks[innerTasks.length - 1], 1);
+
+
+      e.target.parentElement.parentElement.childNodes[1].value = "";
+    }
+  }
+}
